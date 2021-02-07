@@ -1,0 +1,219 @@
+from pygame import *
+init()
+font.init() # for displaying fonts
+
+# define global variables
+myfont = font.SysFont('Comic Sans MS', 100) # to display text win
+textBlit = myfont.render('You Win', True, (0, 0, 0))
+width = 1200
+height = 1000
+screen = display.set_mode((width, height))
+
+froggerLoad = image.load("frog.jpg").convert()
+frog = Rect(600, 950, 64, 64)
+froggerImage = transform.scale(froggerLoad, (64, 64))
+px = 0
+py = 0
+
+carLoad = image.load("car.png").convert()
+carImage = transform.scale(carLoad, (80, 70))
+
+carList = []
+
+class carRecord():
+	carRect = None
+	carSpeed = 0
+car1 = carRecord()
+car1.carRect = Rect(600, 820, 80, 70)
+car1.carSpeed = 2.5
+car2 = carRecord()
+car2.carRect = Rect(400, 740, 80, 70)
+car2.carSpeed = -2.5
+car3 = carRecord()
+car3.carRect = Rect(800, 740, 80, 70)
+car3.carSpeed = -2.5
+car4 = carRecord()
+car4.carRect = Rect(250, 660, 80, 70)
+car4.carSpeed = 3
+car5 = carRecord()
+car5.carRect = Rect(600, 660, 80, 70)
+car5.carSpeed = 3
+car6 = carRecord()
+car6.carRect = Rect(950, 660, 80, 70)
+car6.carSpeed = 3
+car7 = carRecord()
+car7.carRect = Rect(250, 580, 80, 70)
+car7.carSpeed = -3.5
+car8 = carRecord()
+car8.carRect = Rect(600, 580, 80, 70)
+car8.carSpeed = -3.5
+car9 = carRecord()
+car9.carRect = Rect(950, 580, 80, 70)
+car9.carSpeed = -3.5
+
+
+carList.append(car1)
+carList.append(car2)
+carList.append(car3)
+carList.append(car4)
+carList.append(car5)
+carList.append(car6)
+carList.append(car7)
+carList.append(car8)
+carList.append(car9)
+
+logLoad = image.load("log.png").convert()
+logImage = transform.scale(logLoad, (200, 70))
+logList = []
+class logRecord():
+	logRect = None
+	logSpeed = 0
+log1 = logRecord()
+log1.logRect = Rect(250,350,200,85) # may need to change 70 to 90 depending on collisions
+log1.logSpeed = 1.5
+log2 = logRecord()
+log2.logRect = Rect(850,350,200,85)
+log2.logSpeed = 1.5
+log3 = logRecord()
+log3.logRect = Rect(250,270,200,85)
+log3.logSpeed = -1.8
+log4 = logRecord()
+log4.logRect = Rect(850,270,200,85)
+log4.logSpeed = -1.8
+log5 = logRecord()
+log5.logRect = Rect(250,190,200,85)
+log5.logSpeed = 2.3
+log6 = logRecord()
+log6.logRect = Rect(850,190,200,85)
+log6.logSpeed = 2.3
+log7 = logRecord()
+log7.logRect = Rect(250,110,200,85)
+log7.logSpeed = -2.5
+log8 = logRecord()
+log8.logRect = Rect(850,110,200,85)
+log8.logSpeed = -2.5
+
+logList.append(log1)
+logList.append(log2)
+logList.append(log3)
+logList.append(log4)
+logList.append(log5)
+logList.append(log6)
+logList.append(log7)
+logList.append(log8)
+
+
+gameOver = False
+
+# TASK 1 draw the background function!
+# define functions
+
+def drawBackground():
+	global screen
+	screen.fill((255,255,255))
+	background = image.load("backgroundFrogger.png").convert()
+	backRect = Rect(0,0,0,0)
+	screen.blit(background, backRect)
+
+	
+	
+def drawPlayer():
+	global screen, frog, froggerImage
+	screen.blit(froggerImage, frog)
+
+def moveFrog():
+	global px, py, frog
+	frog.move_ip(px,py)
+
+# TASK 2 draw cars
+def drawCars():
+	global screen, carImage
+	for a in carList: 
+		screen.blit(carImage, a.carRect)
+
+
+# TASK 4 - Move the cars. If they go off the screen then wrap them. 
+def moveCars():
+	global carList
+	for a in carList:
+		a.carRect.move_ip(a.carSpeed,0)
+		if a.carRect.x > 1200:
+			a.carRect.x = -80
+		elif a.carRect.x < -80:
+			a.carRect.x = 1200
+			
+def drawLogs():
+	global screen, logImage
+	for s in logList: 
+		screen.blit(logImage, s.logRect)
+		
+def moveLogs():
+	global logList
+	for s in logList:
+		s.logRect.move_ip(s.logSpeed,0)
+		if s.logRect.x > 1200:
+			s.logRect.x = -200
+		elif s.logRect.x < -200:
+			s.logRect.x = 1200
+			
+while not gameOver:
+	for e in event.get():
+		if e.type == QUIT: 
+			gameOver = True
+		elif e.type == KEYDOWN:
+			#if frog.x < 10 or frog.x > 1000: # line 99 and 106 cause game to crash
+				if e.key == K_LEFT:
+					px = -3
+					froggerImage = transform.rotate(froggerImage, 90)
+				if e.key == K_RIGHT:
+					px = 3
+					froggerImage = transform.rotate(froggerImage, -90)
+			#if frog.y < 0 or frog.y > 1200:
+				if e.key == K_UP:
+					py = -3
+				if e.key == K_DOWN:
+					py = 3
+					froggerImage = transform.rotate(froggerImage, 180)
+		elif e.type == KEYUP:
+			if frog.x < 10 or frog.x > 1000 or frog.y > 1000:
+				frog.x = 600
+				frog.y = 950
+			if e.key == K_LEFT or e.key == K_RIGHT or K_DOWN or K_UP:
+				px = 0
+				py = 0
+				froggerLoad = image.load("frog.jpg").convert()
+				froggerImage = transform.scale(froggerLoad, (64, 64))	
+	# TASK 6 - Make a more polished frogger game :)	
+	# movement
+
+	moveFrog()
+	moveCars()
+	moveLogs()
+	# game mechanics
+	drawBackground()
+	drawCars()
+	drawLogs()
+	drawPlayer()
+	for c in carList: #  if frog collides with frog puts back to start
+		if c.carRect.colliderect(frog):
+			frog.x = 600
+			frog.y = 950
+	if frog.y < 430 and frog.y > 100: # this is to detect if the frog has collided with the water and not in contact with a log
+		for g in logList:
+			if g.logRect.colliderect(frog):
+				frog.move_ip(g.logSpeed,0)
+				check = True
+		if check == False:
+			frog.x = 600 # puts frog back at starting point
+			frog.y = 950
+			#exit()
+		check = False
+	if frog.y < 50: # checks to see if frog is past water if so wins
+		screen.blit(textBlit, (600,500)) # displays text if wins
+		time.delay(1000) #  delay then exits
+		exit()
+	# show the newly drawn screen (double buffering)
+	display.flip()
+	# short delay to slow down animation.
+	time.delay(5)
+
